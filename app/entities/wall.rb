@@ -5,6 +5,7 @@ module Entities
     def initialize(opts = {})
       super
       @path = 'sprites/wall.png'
+    end
   end
 end
 

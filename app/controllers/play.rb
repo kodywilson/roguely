@@ -5,9 +5,11 @@ module Controllers
     end
 
     def self.render(state, sprites, labels)
+      sprites << state.map.tiles
     end
 
     def self.reset(state)
+      Controllers::Map.load_map(state)
     end
   end
 end
