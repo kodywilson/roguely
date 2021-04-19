@@ -2,6 +2,11 @@
 class Game
   attr_reader :active_controller
 
+  def goto_game(args)
+    Controllers::Play.reset(args.state)
+    @active_controller = Controllers::Play
+  end
+
   def goto_title
     @active_controller = Controllers::Title
   end

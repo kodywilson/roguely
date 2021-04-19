@@ -2,6 +2,7 @@
 module Controllers
   class Title
     def self.tick(args)
+      $game.goto_game(args) if args.inputs.keyboard.space
     end
 
     def self.render(state, sprites, labels)
