@@ -12,7 +12,7 @@ module Controllers
 
     def self.reset(state)
       Controllers::Map.load_map(state)
-      state.player = Entities::Player.spawn(2, 2)
+      state.player = Entities::Player.spawn(11, 7)
     end
   end
 end

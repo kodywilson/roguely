@@ -6,6 +6,10 @@ module Entities
       super
       @path = 'sprites/wall.png'
     end
+
+    def blocking?
+      true
+    end
   end
 end
 
