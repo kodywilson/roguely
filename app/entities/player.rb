@@ -3,7 +3,7 @@ module Entities
   class Player < Mobile
     def initialize(opts = {})
       super
-      @path = 'sprites/player.png'
+      @path = 'sprites/pc/elf/elf_f_idle_anim_f0.png'
     end
 
     def tick(args)
