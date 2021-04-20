@@ -7,12 +7,14 @@ module Controllers
 
     def self.render(state, sprites, labels)
       sprites << state.map.tiles
+      sprites << state.enemies
       sprites << state.player
     end
 
     def self.reset(state)
       Controllers::Map.load_map(state)
       state.player = Entities::Player.spawn(11, 7)
+      Controllers::Enemy.spawn_enemies(state)
     end
   end
 end
