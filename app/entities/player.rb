@@ -1,12 +1,15 @@
 # The player!
 module Entities
   class Player < Mobile
+    attr_reader :took_action
+
     def initialize(opts = {})
       super
       @path = 'sprites/pc/elf/elf_f_idle_anim_f0.png'
     end
 
     def tick(args)
+      @took_action = false
       target_x = if args.inputs.keyboard.key_down.right || args.inputs.keyboard.key_down.d
                    map_x + Controllers::Map::TILE_WIDTH
                  elsif args.inputs.keyboard.key_down.left || args.inputs.keyboard.key_down.a
@@ -23,6 +26,7 @@ module Entities
                  end
       attempt_move(args, target_x, target_y) do
         Controllers::Map.tick(args)
+        @took_action = true
       end
     end
   end
