@@ -23,6 +23,7 @@ class Game
   def render(args, sprites, labels)
     args.outputs.sprites << sprites
     args.outputs.labels << labels
+    args.outputs.sounds << "sounds/Mist_Covered_Mountains.ogg"
   end
 end
 
