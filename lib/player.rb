@@ -31,7 +31,9 @@ class Player
   
   def load_images
     {
-      running: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "run", "warrior_run_x2.png"), 128, 88)
+      running: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "run", "warrior_run_x2.png"), 128, 88),
+      idle: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "idle", "warrior_idle.png"), 128, 88),
+      attack: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "attack", "warrior_attack.png"), 128, 88)
     }
   end
 
@@ -67,8 +69,10 @@ class Player
   # end
 
   def draw_start
-    if @image_index < @images[:running].count
-      @images[:running][@image_index].draw(@x, @y, 1, scale_x = 2, scale_y = 2)
+    intro_images = @images[:running][0..7] + @images[:idle][0..5] + @images[:attack][0..11]
+    intro_images = intro_images + @images[:running][8..15] + @images[:idle][6..11] + @images[:attack][12..23]
+    if @image_index < intro_images.count
+      intro_images[@image_index].draw(@x, @y, 1, scale_x = 2, scale_y = 2)
       if @counter % 5 == 0
         @image_index += 1
       end
