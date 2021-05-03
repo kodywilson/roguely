@@ -58,10 +58,9 @@ class Player
   #   @image.draw_rot(@x, @y, 1, @angle)
   # end
 
-  def draw
-    @font.draw_text("TEST",800,40,1,1,1,Gosu::Color::RED)
+  def draw_start
     if @image_index < @images.count
-      @images[@image_index].draw(@x, @y, 1, scale_x = 3, scale_y = 3)
+      @images[@image_index].draw(@x, @y, 1, scale_x = 4, scale_y = 4)
       if @counter % 5 == 0
         @image_index += 1
       end
