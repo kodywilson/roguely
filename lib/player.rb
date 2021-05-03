@@ -4,6 +4,7 @@ class Player
   ROTATION_SPEED = 3 # These should be an instance variable based on chosen difficulty
   ACCELERATION = 1
   FRICTION = 0.9
+  IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
 
   attr_reader :x, :y, :angle, :radius
 
@@ -15,16 +16,23 @@ class Player
     @velocity_y = 0
     @radius = 30
     @window = window
-    @images = Gosu::Image.load_tiles('assets/sprites/adventurer-v1.5-Sheet.png', 50, 37)
+    #@images = Gosu::Image.load_tiles('assets/sprites/adventurer-v1.5-Sheet.png', 50, 37)
     @image_index = 0
     @finished = false
     @counter = 0
     @font = Gosu::Font.new(28)
+    @images = load_images
   end
 
   def accelerate
     @velocity_x += Gosu.offset_x(@angle, ACCELERATION)
     @velocity_y += Gosu.offset_y(@angle, ACCELERATION)
+  end
+  
+  def load_images
+    {
+      running: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "run", "warrior_run_x2.png"), 128, 88)
+    }
   end
 
   def move
@@ -59,8 +67,8 @@ class Player
   # end
 
   def draw_start
-    if @image_index < @images.count - 3
-      @images[@image_index].draw(@x, @y, 1, scale_x = 4, scale_y = 4)
+    if @image_index < @images[:running].count
+      @images[:running][@image_index].draw(@x, @y, 1, scale_x = 2, scale_y = 2)
       if @counter % 5 == 0
         @image_index += 1
       end
