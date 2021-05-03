@@ -20,10 +20,10 @@ class Roguely < Gosu::Window
 		@intro = []
     y = 700
     File.open('assets/text/intro.txt').each do |line|
-      @intro.push(ScrollText.new(self,line.chomp,50,y))
+      @intro.push(ScrollText.new(self,line.chomp,100,y))
       y += 30
     end
-		@player = Player.new(self,800,375)
+		@player = Player.new(self,700,300)
   end
 
 	def update_start
@@ -41,7 +41,7 @@ class Roguely < Gosu::Window
 	def draw_start
 		clip_to(50,139,1250,480) do
       @intro.each { |intro| intro.draw }
-			@player.draw
+			@player.draw_start
     end
 		draw_line(0,140,Gosu::Color::RED,WIDTH,140,Gosu::Color::RED)
     @top_font.draw_text(@top_message,400,40,1,1,1,Gosu::Color::RED)
