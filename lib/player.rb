@@ -59,7 +59,7 @@ class Player
   # end
 
   def draw_start
-    if @image_index < @images.count
+    if @image_index < @images.count - 3
       @images[@image_index].draw(@x, @y, 1, scale_x = 4, scale_y = 4)
       if @counter % 5 == 0
         @image_index += 1
