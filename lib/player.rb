@@ -4,9 +4,10 @@ class Player
   ACCELERATION = 1
   FRICTION = 0.5
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
+  MAX_SPEED = 5
 
   attr_reader :x, :y, :angle, :radius
-  attr_accessor :direction, :moving
+  attr_accessor :direction, :moving, :velocity
 
   def initialize(window, x, y)
     @x = x
@@ -14,6 +15,7 @@ class Player
     @angle = 0.0
     @direction = :left
     @moving = false
+    @velocity = 1
     @velocity_x = 0
     @velocity_y = 0
     @radius = 40
@@ -40,28 +42,30 @@ class Player
   end
 
   def move
-    @velocity = 2
-    #@velocity_x *= FRICTION
+    @velocity = MAX_SPEED if @velocity > MAX_SPEED
     case @direction
     when :left
-      if @moving
+      if @moving == true
         @x -= @velocity
         @frames = @images[:running][0..7]
       else
-        @images[:idle][0..5]
+        @frames = @images[:idle][0..5]
       end
     when :right
-      if @moving
+      if @moving == true
         @x += @velocity
         @frames = @images[:running][8..15]
       else
-        @images[:idle][6..11]
+        @frames = @images[:idle][6..11]
       end
     when :up
-      @y -= @velocity if @moving
+      @y -= @velocity if @moving == true
+      #@frames = @images[:idle][0..5]
     when :down
-      @y += @velocity if @moving
+      @y += @velocity if @moving == true
+      #@frames = @images[:idle][6..11]
     end
+    @velocity = 1 if @moving == false
     # @x += @velocity_x
     # @y += @velocity_y
     # @velocity_x *= FRICTION

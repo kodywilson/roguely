@@ -79,20 +79,18 @@ class Roguely < Gosu::Window
   end
 
 	def update_game
-		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
-			@player.direction = :left
+		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA) || button_down?(Gosu::KbRight) || button_down?(Gosu::KbD) || button_down?(Gosu::KbUp) || button_down?(Gosu::KbW) || button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 			@player.moving = true
-		elsif button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
-    	@player.direction = :right
-			@player.moving = true
-    elsif button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
-			@player.direction = :up
-			@player.moving = true
-		elsif button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
-			@player.direction = :down
-			@player.moving = true
+			# Although it is more realistic, I'm not convinced that I like the "feel" of acceleration. It ends up feeling "sticky"...
+			# using gosu offset might feel smoother.
+			@player.velocity += 1 if Gosu.milliseconds % 10 == 0
+			@player.direction = :left if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
+    	@player.direction = :right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
+			@player.direction = :up if button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
+			@player.direction = :down if button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 		else
 		 	@player.moving = false
+			#@player.velocity = 0
 		end
     @player.move
 	end
