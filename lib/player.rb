@@ -1,20 +1,22 @@
 # Player sprite class
 class Player
 
-  ROTATION_SPEED = 3 # These should be an instance variable based on chosen difficulty
   ACCELERATION = 1
-  FRICTION = 0.9
+  FRICTION = 0.5
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
 
   attr_reader :x, :y, :angle, :radius
+  attr_accessor :direction, :moving
 
   def initialize(window, x, y)
     @x = x
     @y = y
     @angle = 0.0
+    @direction = :left
+    @moving = false
     @velocity_x = 0
     @velocity_y = 0
-    @radius = 30
+    @radius = 40
     @window = window
     @image_index = 0
     @finished = false
@@ -38,35 +40,47 @@ class Player
   end
 
   def move
-    @x += @velocity_x
-    @y += @velocity_y
-    @velocity_x *= FRICTION
-    @velocity_y *= FRICTION
-    if @x > @window.width - @radius
-      @velocity_x = 0
-      @x = @window.width - @radius
+    @velocity = 2
+    #@velocity_x *= FRICTION
+    case @direction
+    when :left
+      if @moving
+        @x -= @velocity
+        @frames = @images[:running][0..7]
+      else
+        @images[:idle][0..5]
+      end
+    when :right
+      if @moving
+        @x += @velocity
+        @frames = @images[:running][8..15]
+      else
+        @images[:idle][6..11]
+      end
+    when :up
+      @y -= @velocity if @moving
+    when :down
+      @y += @velocity if @moving
     end
-    if @x < @radius
-      @velocity_x = 0
-      @x = @radius
-    end
-    if @y > @window.height - @radius
-      @velocity_y = 0
-      @y = @window.height - @radius
-    end
+    # @x += @velocity_x
+    # @y += @velocity_y
+    # @velocity_x *= FRICTION
+    # @velocity_y *= FRICTION
+    # if @x > @window.width - @radius
+    #   @velocity_x = 0
+    #   @x = @window.width - @radius
+    # end
+    # if @x < @radius
+    #   @velocity_x = 0
+    #   @x = @radius
+    # end
+    # if @y > @window.height - @radius
+    #   @velocity_y = 0
+    #   @y = @window.height - @radius
+    # end
   end
 
-  def right
-    #@angle += ROTATION_SPEED
-    @frames = @images[:running][8..15]
-  end
-
-  def left
-    #@angle -= ROTATION_SPEED
-    @frames = @images[:running][0..7]
-  end
-
-  def draw(scale = 1)
+  def draw(scale = 0.5)
     if @image_index < @frames.count
       @frames[@image_index].draw(@x, @y, 1, scale_x = scale, scale_y = scale)
       if @counter % 5 == 0

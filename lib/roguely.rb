@@ -78,10 +78,22 @@ class Roguely < Gosu::Window
   end
 
 	def update_game
-		@player.left if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
-    @player.right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
-    #@player.up if button_down?(Gosu::KbUp)
-    #@player.move
+		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
+			@player.direction = :left
+			@player.moving = true
+		elsif button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
+    	@player.direction = :right
+			@player.moving = true
+    elsif button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
+			@player.direction = :up
+			@player.moving = true
+		elsif button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
+			@player.direction = :down
+			@player.moving = true
+		else
+		 	@player.moving = false
+		end
+    @player.move
 	end
 
 	def update_start
