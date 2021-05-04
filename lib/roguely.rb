@@ -120,6 +120,10 @@ class Roguely < Gosu::Window
       @intro.each { |intro| intro.draw }
 			@player.draw_start
     end
+		draw_line(80,138,Gosu::Color::RED,90,128,Gosu::Color::RED)
+		draw_line(100,138,Gosu::Color::RED,90,128,Gosu::Color::RED)
+		draw_line(WIDTH - 160,138,Gosu::Color::RED,WIDTH - 175,158,Gosu::Color::RED)
+		draw_line(WIDTH - 190,138,Gosu::Color::RED,WIDTH - 175,158,Gosu::Color::RED)
 		3.times {|x| draw_line(0,138 + x,Gosu::Color::RED,WIDTH,138 + x,Gosu::Color::RED)}
     @top_font.draw_text(@top_message,400,40,1,1,1,Gosu::Color::RED)
 		3.times {|x| draw_line(0,628 + x,Gosu::Color::RED,WIDTH,628 + x,Gosu::Color::RED)}
