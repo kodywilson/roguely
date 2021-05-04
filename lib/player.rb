@@ -16,12 +16,12 @@ class Player
     @velocity_y = 0
     @radius = 30
     @window = window
-    #@images = Gosu::Image.load_tiles('assets/sprites/adventurer-v1.5-Sheet.png', 50, 37)
     @image_index = 0
     @finished = false
     @counter = 0
     @font = Gosu::Font.new(28)
     @images = load_images
+    @frames = @images[:idle][0..5]
   end
 
   def accelerate
@@ -56,23 +56,19 @@ class Player
     end
   end
 
-  def turn_right
-    @angle += ROTATION_SPEED
+  def right
+    #@angle += ROTATION_SPEED
+    @frames = @images[:running][8..15]
   end
 
-  def turn_left
-    @angle -= ROTATION_SPEED
+  def left
+    #@angle -= ROTATION_SPEED
+    @frames = @images[:running][0..7]
   end
 
-  # def draw
-  #   @image.draw_rot(@x, @y, 1, @angle)
-  # end
-
-  def draw_start
-    intro_images = @images[:running][0..7] + @images[:idle][0..5] + @images[:attack][0..11]
-    intro_images = intro_images + @images[:running][8..15] + @images[:idle][6..11] + @images[:attack][12..23]
-    if @image_index < intro_images.count
-      intro_images[@image_index].draw(@x, @y, 1, scale_x = 2, scale_y = 2)
+  def draw(scale = 1)
+    if @image_index < @frames.count
+      @frames[@image_index].draw(@x, @y, 1, scale_x = scale, scale_y = scale)
       if @counter % 5 == 0
         @image_index += 1
       end
@@ -81,12 +77,12 @@ class Player
       @finished = true
       @image_index = 0
       counter = 0
-      if @angle == 0.0
-        @angle = 0.0
-      else
-        @angle = 0.0
-      end
     end
+  end
+
+  def draw_start
+    @frames = @images[:running][0..7] + @images[:idle][0..5] + @images[:attack][0..11]  + @images[:running][8..15] + @images[:idle][6..11] + @images[:attack][12..23]
+    draw(2)
   end
 
 end
