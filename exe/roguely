@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+GAME_ROOT = File.expand_path('..', File.dirname(__FILE__))
+
 require_relative '../lib/roguely'
 
 window = Roguely.new
