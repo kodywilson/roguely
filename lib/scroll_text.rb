@@ -9,7 +9,7 @@ class ScrollText
     @x = x
     @y = @initial_y = y
     @text = text
-    @font = Gosu::Font.new(24)
+    @font = Gosu::Font.new(32, { name: FONT })
   end
 
   def move

@@ -1,5 +1,6 @@
 # Roguely Game Window
 
+FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
 
@@ -16,8 +17,8 @@ class Roguely < Gosu::Window
     super(WIDTH,HEIGHT)
 		self.caption = 'Roguely'
     @scene = :start
-		@start_font = Gosu::Font.new(28)
-		@top_font = Gosu::Font.new(64)
+		@start_font = Gosu::Font.new(32, { name: FONT })
+		@top_font = Gosu::Font.new(64, { name: FONT })
 		@top_message = "Roguely"
 		@bottom_message = "Press < space > to begin the game, < q > to quit."
 		@intro = []
@@ -78,20 +79,18 @@ class Roguely < Gosu::Window
   end
 
 	def update_game
-		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
-			@player.direction = :left
+		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA) || button_down?(Gosu::KbRight) || button_down?(Gosu::KbD) || button_down?(Gosu::KbUp) || button_down?(Gosu::KbW) || button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 			@player.moving = true
-		elsif button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
-    	@player.direction = :right
-			@player.moving = true
-    elsif button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
-			@player.direction = :up
-			@player.moving = true
-		elsif button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
-			@player.direction = :down
-			@player.moving = true
+			# Although it is more realistic, I'm not convinced that I like the "feel" of acceleration. It ends up feeling "sticky"...
+			# using gosu offset might feel smoother.
+			@player.velocity += 1 if Gosu.milliseconds % 10 == 0
+			@player.direction = :left if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
+    	@player.direction = :right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
+			@player.direction = :up if button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
+			@player.direction = :down if button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 		else
 		 	@player.moving = false
+			#@player.velocity = 0
 		end
     @player.move
 	end
@@ -119,10 +118,14 @@ class Roguely < Gosu::Window
       @intro.each { |intro| intro.draw }
 			@player.draw_start
     end
+		draw_line(80,138,Gosu::Color::RED,90,128,Gosu::Color::RED)
+		draw_line(100,138,Gosu::Color::RED,90,128,Gosu::Color::RED)
+		draw_line(WIDTH - 160,138,Gosu::Color::RED,WIDTH - 175,158,Gosu::Color::RED)
+		draw_line(WIDTH - 190,138,Gosu::Color::RED,WIDTH - 175,158,Gosu::Color::RED)
 		3.times {|x| draw_line(0,138 + x,Gosu::Color::RED,WIDTH,138 + x,Gosu::Color::RED)}
     @top_font.draw_text(@top_message,400,40,1,1,1,Gosu::Color::RED)
 		3.times {|x| draw_line(0,628 + x,Gosu::Color::RED,WIDTH,628 + x,Gosu::Color::RED)}
-    @start_font.draw_text(@bottom_message,180,660,1,1,1,Gosu::Color::AQUA)
+    @start_font.draw_text(@bottom_message,180,660,1,1,1,Gosu::Color::RED)
 	end
 
   def draw
