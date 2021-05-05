@@ -46,15 +46,32 @@ class Roguely < Gosu::Window
   end
 
 	def lay_tile # Har har
-		x = 0
-		y = 0
-		24.times do |a|
-			33.times do |b|
+		# First set out floor tiles
+		x, y = 32, 32
+		23.times do |a|
+			31.times do |b|
 				@floor.push(Terrain.new(self,x,y))
+				x = 32 * (b + 1)
+			end
+			x = 32
+			y = 32 * (a + 1)
+		end
+		# Second build walls
+		x, y = 0, 0
+		2.times do
+			33.times do |b|
+				@wall.push(Wall.new(self,x,y))
 				x = 32 * b
 			end
-			x = 0
-			y = 32 * a
+			y = HEIGHT - 32
+		end
+		x, y = 0, 0
+		2.times do
+			25.times do |b|
+				@wall.push(Wall.new(self,x,y))
+				y = 32 * b
+			end
+			x = WIDTH - 32
 		end
 	end
 
@@ -130,6 +147,7 @@ class Roguely < Gosu::Window
 	def draw_game
 		@player.draw
 		@floor.each { |floor| floor.draw }
+		@wall.each { |wall| wall.draw }
 	end
 
 	def draw_start
