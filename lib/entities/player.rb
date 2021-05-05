@@ -70,23 +70,23 @@ class Player
     # @y += @velocity_y
     # @velocity_x *= FRICTION
     # @velocity_y *= FRICTION
-    # if @x > @window.width - @radius
-    #   @velocity_x = 0
-    #   @x = @window.width - @radius
-    # end
-    # if @x < @radius
-    #   @velocity_x = 0
-    #   @x = @radius
-    # end
-    # if @y > @window.height - @radius
-    #   @velocity_y = 0
-    #   @y = @window.height - @radius
-    # end
+    if @x > @window.width - @radius
+      @velocity = 1
+      @x = @window.width - @radius
+    end
+    if @x < @radius
+      @velocity = 1
+      @x = @radius
+    end
+    if @y > @window.height - @radius
+      @velocity = 1
+      @y = @window.height - @radius
+    end
   end
 
   def draw(scale = 0.5)
     if @image_index < @frames.count
-      @frames[@image_index].draw(@x, @y, 1, scale_x = scale, scale_y = scale)
+      @frames[@image_index].draw(@x, @y, 2, scale_x = scale, scale_y = scale)
       if @counter % 5 == 0
         @image_index += 1
       end

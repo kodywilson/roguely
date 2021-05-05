@@ -5,8 +5,10 @@ SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
 
 require 'gosu'
-require_relative 'player'
-require_relative 'scroll_text'
+require_relative 'entities/player'
+require_relative 'entities/scroll_text'
+require_relative 'entities/terrain'
+require_relative 'entities/wall'
 
 class Roguely < Gosu::Window
 
@@ -33,12 +35,45 @@ class Roguely < Gosu::Window
 	def initialize_game
     @player = Player.new(self,100,600)
     @enemies = []
+		@floor = []
+		@wall = []
+		lay_tile
     @scene = :game
     @enemies_appeared = 0
     @enemies_destroyed = 0
     # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
     # @game_music.play(true)
   end
+
+	def lay_tile # Har har
+		# First set out floor tiles
+		x, y = 32, 32
+		23.times do |a|
+			31.times do |b|
+				@floor.push(Terrain.new(self,x,y))
+				x = 32 * (b + 1)
+			end
+			x = 32
+			y = 32 * (a + 1)
+		end
+		# Second build walls
+		x, y = 0, 0
+		2.times do
+			33.times do |b|
+				@wall.push(Wall.new(self,x,y))
+				x = 32 * b
+			end
+			y = HEIGHT - 32
+		end
+		x, y = 0, 0
+		2.times do
+			25.times do |b|
+				@wall.push(Wall.new(self,x,y))
+				y = 32 * b
+			end
+			x = WIDTH - 32
+		end
+	end
 
   def needs_cursor?
     false
@@ -111,6 +146,8 @@ class Roguely < Gosu::Window
 
 	def draw_game
 		@player.draw
+		@floor.each { |floor| floor.draw }
+		@wall.each { |wall| wall.draw }
 	end
 
 	def draw_start
