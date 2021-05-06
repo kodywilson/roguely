@@ -1,6 +1,6 @@
 # Roguely Game Window
 
-DEBUG = false # set to false to turn off bounding boxes etc.
+DEBUG = true # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -158,10 +158,11 @@ class Roguely < Gosu::Window
 
   def button_down_game(id)
 		# use later for shooting arrows
-    # if id == Gosu::KbSpace
-    #   @arrows.push(Bullet.new(self, @player.x, @player.y, @player.angle))
-    #   @shooting_sound.play(0.3)
-    # end
+    if id == Gosu::KbSpace
+			@player.attack(@player.direction)
+      # @arrows.push(Bullet.new(self, @player.x, @player.y, @player.angle))
+      # @shooting_sound.play(0.3)
+    end
 		if id == Gosu::KbEscape
 			initialize
 		end
@@ -210,12 +211,11 @@ class Roguely < Gosu::Window
 			@player.direction = :down if button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 		else
 		 	@player.moving = false
-			#@player.velocity = 5
 		end
 		@player.update_bounds
-		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
-		@colliding = colliding?(@player.direction)
-    @player.move unless @colliding == true
+		@player.animation
+		colliding?(@player.direction)
+    @player.move unless @player.colliding == true || @player.attacking == true || @player.moving == false
 	end
 
 	def update_start

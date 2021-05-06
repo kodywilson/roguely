@@ -6,7 +6,7 @@ class Player
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
   MAX_SPEED = 5
 
-  attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low
+  attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking
   attr_accessor :colliding, :direction, :middle, :moving, :velocity
 
   def initialize(window, x, y)
@@ -36,6 +36,17 @@ class Player
     @b_right = @x + @width * 3 / 4
     @b_top = @y + @height / 8
     @b_low = @y + @height
+    @attacking = false
+  end
+
+  def attack(direction)
+    case @direction
+    when :left || :up
+      @frames = @images[:attack][0..11]
+    when :right || :down
+      @frames = @images[:attack][12..23]
+    end
+    @attacking = true
   end
 
   def accelerate
@@ -51,47 +62,33 @@ class Player
     }
   end
 
+  def animation
+    if @moving == false && @attacking == false
+      @frames = @images[:idle][0..5] if @direction == :left || @direction == :up
+      @frames = @images[:idle][6..11] if @direction == :right || @direction == :down
+    elsif @moving == true && @attacking == false
+      case @direction
+      when :left || :up
+        @frames = @images[:running][0..7]
+      when :right || :down
+        @frames = @images[:running][8..15]
+      end
+    end
+  end
+
   def move
+    #return if @attacking == true
     @velocity = MAX_SPEED if @velocity > MAX_SPEED
     case @direction
     when :left
-      if @moving == true && @colliding == false
-        @x -= @velocity
-        @frames = @images[:running][0..7]
-      else
-        @frames = @images[:idle][0..5]
-      end
+      @x -= @velocity
     when :right
-      if @moving == true
-        @x += @velocity
-        @frames = @images[:running][8..15]
-      else
-        @frames = @images[:idle][6..11]
-      end
+      @x += @velocity
     when :up
-      @y -= @velocity if @moving == true
-      #@frames = @images[:idle][0..5]
+      @y -= @velocity
     when :down
-      @y += @velocity if @moving == true
-      #@frames = @images[:idle][6..11]
+      @y += @velocity
     end
-    #@velocity = 5 if @moving == false
-    # @x += @velocity_x
-    # @y += @velocity_y
-    # @velocity_x *= FRICTION
-    # @velocity_y *= FRICTION
-    # if @x > @window.width - @radius
-    #   @velocity = 1
-    #   @x = @window.width - @radius
-    # end
-    # if @x < @radius
-    #   @velocity = 1
-    #   @x = @radius
-    # end
-    # if @y > @window.height - @radius
-    #   @velocity = 1
-    #   @y = @window.height - @radius
-    # end
   end
 
   def draw(scale = 0.5)
@@ -104,11 +101,12 @@ class Player
       @counter += 1
     else
       @finished = true
+      @attacking = false
       @image_index = 0
       counter = 0
     end
-    #@start_font.draw_text("Height: #{@player.height.to_s}  Width: #{@player.width.to_s}",180,660,1,1,1,Gosu::Color::RED)
 		if DEBUG
+      @font.draw_text("Moving?: #{@moving}  Attacking?: #{@attacking}  Colliding?: #{@colliding}",180,660,1,1,1,Gosu::Color::RED)
       # Draw cross centered on player
       Gosu::draw_line(@x + @width / 2,@y,@color,@x + @width / 2,@y + @height,@color,2)
       Gosu::draw_line(@x,@y + @height / 2,@color,@x + @width,@y + @height / 2,@color,2)
