@@ -10,6 +10,7 @@ require_relative 'entities/player'
 require_relative 'entities/scroll_text'
 require_relative 'entities/terrain'
 require_relative 'entities/wall'
+require_relative 'entities/skeleton'
 
 class Roguely < Gosu::Window
 
@@ -46,7 +47,8 @@ class Roguely < Gosu::Window
     # @game_music.play(true)
   end
 
-	def colliding?(direction, ents)
+	def colliding?(direction)
+		ents = @wall + @enemies
 		case direction
 		when :left
 			(ents.select {|ent| ent.b_right < @player.b_left}).each do |ent|
@@ -127,6 +129,8 @@ class Roguely < Gosu::Window
 		@x = rand * 640
     @y = rand * 480
 		20.times { @wall.push(Wall.new(self,rand(32..WIDTH - 64),rand(32..HEIGHT - 64))) }
+		# Fourth and this will be moved later, spawn some enemies.
+		10.times { @enemies.push(Skeleton.new(self,rand(32..WIDTH - 64),rand(32..HEIGHT - 64))) }
 	end
 
   def needs_cursor?
@@ -191,7 +195,7 @@ class Roguely < Gosu::Window
 		end
 		@player.update_bounds
 		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
-		@colliding = colliding?(@player.direction, @wall)
+		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true
 	end
 
@@ -213,6 +217,7 @@ class Roguely < Gosu::Window
 		@player.draw
 		@floor.each { |floor| floor.draw }
 		@wall.each { |wall| wall.draw }
+		@enemies.each {|enemy| enemy.draw }
 	end
 
 	def draw_start
