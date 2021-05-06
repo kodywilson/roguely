@@ -45,6 +45,31 @@ class Roguely < Gosu::Window
     # @game_music.play(true)
   end
 
+	def colliding?(direction, ents)
+		case direction
+		when :left
+			(ents.select {|ent| ent.x < @player.x}).each do |ent|
+				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
+				return true if distance < ent.radius + @player.width / 3
+			end
+		when :right
+			(ents.select {|ent| ent.x > @player.x}).each do |ent|
+				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
+				return true if distance < ent.radius + @player.width / 3
+			end
+		when :up
+			(ents.select {|ent| ent.y < @player.y}).each do |ent|
+				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
+				return true if distance < ent.radius + @player.width / 2
+			end
+		when :down
+			(ents.select {|ent| ent.y > @player.y}).each do |ent|
+				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
+				return true if distance < ent.radius + @player.width / 2
+			end
+		end
+	end
+
 	def lay_tile # Har har
 		# First set out floor tiles
 		x, y = 32, 32
@@ -56,7 +81,7 @@ class Roguely < Gosu::Window
 			x = 32
 			y = 32 * (a + 1)
 		end
-		# Second build walls
+		#Second build walls
 		x, y = 0, 0
 		2.times do
 			33.times do |b|
@@ -88,6 +113,13 @@ class Roguely < Gosu::Window
 		if id == Gosu::KbEscape
 			initialize
 		end
+		if id == Gosu::KbLeftShift # Toggle sprinting
+			if @player.velocity == 3
+				@player.velocity = 6
+			else
+				@player.velocity = 3
+			end
+		end
   end
 
   def button_down_start(id)
@@ -118,16 +150,19 @@ class Roguely < Gosu::Window
 			@player.moving = true
 			# Although it is more realistic, I'm not convinced that I like the "feel" of acceleration. It ends up feeling "sticky"...
 			# using gosu offset might feel smoother.
-			@player.velocity += 1 if Gosu.milliseconds % 10 == 0
+			#@player.velocity += 1 if Gosu.milliseconds % 10 == 0
+			#@player.velocity = 5
 			@player.direction = :left if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
     	@player.direction = :right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
 			@player.direction = :up if button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
 			@player.direction = :down if button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 		else
 		 	@player.moving = false
-			#@player.velocity = 0
+			#@player.velocity = 5
 		end
-    @player.move
+		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
+		@colliding = colliding?(@player.direction, @wall)
+    @player.move unless @colliding == true
 	end
 
 	def update_start
@@ -146,8 +181,15 @@ class Roguely < Gosu::Window
 
 	def draw_game
 		@player.draw
+		@start_font.draw_text("Height: #{@player.height.to_s}  Width: #{@player.width.to_s}",180,660,1,1,1,Gosu::Color::RED)
+		draw_line(@player.x + @player.width / 2,@player.y,Gosu::Color::RED,@player.x + @player.width / 2,@player.y + @player.height,Gosu::Color::RED,2)
+		draw_line(@player.x,@player.y + @player.height / 2,Gosu::Color::RED,@player.x + @player.width,@player.y + @player.height / 2,Gosu::Color::RED,2)
 		@floor.each { |floor| floor.draw }
-		@wall.each { |wall| wall.draw }
+		@wall.each { |wall|
+			wall.draw
+			draw_line(wall.x + 16,wall.y,Gosu::Color::RED,wall.x + 16,wall.y + 32,Gosu::Color::RED,2)
+			draw_line(wall.x,wall.y + 16,Gosu::Color::RED,wall.x + 32,wall.y + 16,Gosu::Color::RED,2)
+		}
 	end
 
 	def draw_start

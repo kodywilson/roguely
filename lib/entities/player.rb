@@ -4,10 +4,10 @@ class Player
   ACCELERATION = 1
   FRICTION = 0.5
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
-  MAX_SPEED = 5
+  MAX_SPEED = 6
 
-  attr_reader :x, :y, :angle, :radius
-  attr_accessor :direction, :moving, :velocity
+  attr_reader :x, :y, :angle, :radius, :height, :width
+  attr_accessor :colliding, :direction, :middle, :moving, :velocity
 
   def initialize(window, x, y)
     @x = x
@@ -15,10 +15,12 @@ class Player
     @angle = 0.0
     @direction = :left
     @moving = false
-    @velocity = 1
+    @velocity = 3
     @velocity_x = 0
     @velocity_y = 0
-    @radius = 40
+    @radius = 8
+    @middle = []
+    @colliding = false
     @window = window
     @image_index = 0
     @finished = false
@@ -26,6 +28,8 @@ class Player
     @font = Gosu::Font.new(28)
     @images = load_images
     @frames = @images[:idle][0..5]
+    @height = @frames[0].height / 2
+    @width = @frames[0].width / 2
   end
 
   def accelerate
@@ -65,26 +69,27 @@ class Player
       @y += @velocity if @moving == true
       #@frames = @images[:idle][6..11]
     end
-    @velocity = 1 if @moving == false
+    #@velocity = 5 if @moving == false
     # @x += @velocity_x
     # @y += @velocity_y
     # @velocity_x *= FRICTION
     # @velocity_y *= FRICTION
-    if @x > @window.width - @radius
-      @velocity = 1
-      @x = @window.width - @radius
-    end
-    if @x < @radius
-      @velocity = 1
-      @x = @radius
-    end
-    if @y > @window.height - @radius
-      @velocity = 1
-      @y = @window.height - @radius
-    end
+    # if @x > @window.width - @radius
+    #   @velocity = 1
+    #   @x = @window.width - @radius
+    # end
+    # if @x < @radius
+    #   @velocity = 1
+    #   @x = @radius
+    # end
+    # if @y > @window.height - @radius
+    #   @velocity = 1
+    #   @y = @window.height - @radius
+    # end
   end
 
   def draw(scale = 0.5)
+    #scale = 1
     if @image_index < @frames.count
       @frames[@image_index].draw(@x, @y, 2, scale_x = scale, scale_y = scale)
       if @counter % 5 == 0
