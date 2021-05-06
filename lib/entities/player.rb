@@ -30,6 +30,12 @@ class Player
     @frames = @images[:idle][0..5]
     @height = @frames[0].height / 2
     @width = @frames[0].width / 2
+    @color = Gosu::Color::RED
+    # bounding variables
+    @b_left = @x + @width / 4
+    @b_right = @x + @width * 3 / 4
+    @b_top = @y + @height / 8
+    @b_low = @y + @height
   end
 
   def accelerate
@@ -101,11 +107,37 @@ class Player
       @image_index = 0
       counter = 0
     end
+    #@start_font.draw_text("Height: #{@player.height.to_s}  Width: #{@player.width.to_s}",180,660,1,1,1,Gosu::Color::RED)
+		if DEBUG
+      # Draw cross centered on player
+      Gosu::draw_line(@x + @width / 2,@y,@color,@x + @width / 2,@y + @height,@color,2)
+      Gosu::draw_line(@x,@y + @height / 2,@color,@x + @width,@y + @height / 2,@color,2)
+      # Draw box around player - quads are solid so better to use lines
+      #.draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
+      #Gosu::draw_quad(@x + @width / 4, @y + @height / 4, @color, @x + @width * 3 / 4, @y + @height / 4, @color, @x + @width * 3 / 4, @y + @height * 3 / 4, @color, @x, @y + @height * 3 / 4, @color, 3)
+      # Scaling really makes this more funky - here's a bpx using the width and height
+      # Gosu::draw_line(@x,@y,@color,@x + @width,@y,@color,2)
+      # Gosu::draw_line(@x + @width,@y,@color,@x + @width,@y + @height,@color,2)
+      # Gosu::draw_line(@x,@y,@color,@x,@y + @height,@color,2)
+      # Gosu::draw_line(@x,@y + height,@color,@x + @width,@y + @height,@color,2)
+      # and now one that represents the player's bounds box
+      Gosu::draw_line(@b_left,@b_top,@color,@b_right,@b_top,@color,2)
+      Gosu::draw_line(@b_right,@b_top,@color,@b_right,@b_low,@color,2)
+      Gosu::draw_line(@b_left,@b_top,@color,@b_left,@b_low,@color,2)
+      Gosu::draw_line(@b_left,@b_low,@color,@b_right,@b_low,@color,2)
+    end
   end
 
   def draw_start
     @frames = @images[:running][0..7] + @images[:idle][0..5] + @images[:attack][0..11]  + @images[:running][8..15] + @images[:idle][6..11] + @images[:attack][12..23]
     draw(2)
+  end
+
+  def update_bounds
+    @b_left = @x + @width / 4
+    @b_right = @x + @width * 3 / 4
+    @b_top = @y + @height / 8
+    @b_low = @y + @height
   end
 
 end

@@ -1,5 +1,6 @@
 # Roguely Game Window
 
+DEBUG = true # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -160,8 +161,9 @@ class Roguely < Gosu::Window
 		 	@player.moving = false
 			#@player.velocity = 5
 		end
+		@player.update_bounds
 		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
-		@colliding = colliding?(@player.direction, @wall)
+		@colliding = false#colliding?(@player.direction, @wall)
     @player.move unless @colliding == true
 	end
 
@@ -181,15 +183,8 @@ class Roguely < Gosu::Window
 
 	def draw_game
 		@player.draw
-		@start_font.draw_text("Height: #{@player.height.to_s}  Width: #{@player.width.to_s}",180,660,1,1,1,Gosu::Color::RED)
-		draw_line(@player.x + @player.width / 2,@player.y,Gosu::Color::RED,@player.x + @player.width / 2,@player.y + @player.height,Gosu::Color::RED,2)
-		draw_line(@player.x,@player.y + @player.height / 2,Gosu::Color::RED,@player.x + @player.width,@player.y + @player.height / 2,Gosu::Color::RED,2)
 		@floor.each { |floor| floor.draw }
-		@wall.each { |wall|
-			wall.draw
-			draw_line(wall.x + 16,wall.y,Gosu::Color::RED,wall.x + 16,wall.y + 32,Gosu::Color::RED,2)
-			draw_line(wall.x,wall.y + 16,Gosu::Color::RED,wall.x + 32,wall.y + 16,Gosu::Color::RED,2)
-		}
+		@wall.each { |wall| wall.draw }
 	end
 
 	def draw_start
