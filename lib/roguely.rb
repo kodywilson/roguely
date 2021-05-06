@@ -10,6 +10,7 @@ require_relative 'entities/player'
 require_relative 'entities/scroll_text'
 require_relative 'entities/terrain'
 require_relative 'entities/wall'
+require_relative 'entities/skeleton'
 
 class Roguely < Gosu::Window
 
@@ -46,7 +47,8 @@ class Roguely < Gosu::Window
     # @game_music.play(true)
   end
 
-	def colliding?(direction, ents)
+	def colliding?(direction)
+		ents = @wall + @enemies
 		case direction
 		when :left
 			(ents.select {|ent| ent.b_right < @player.b_left}).each do |ent|
@@ -124,9 +126,30 @@ class Roguely < Gosu::Window
 			x = WIDTH - 32
 		end
 		# Third, randomly distribute some wall pieces around the map
-		@x = rand * 640
-    @y = rand * 480
-		20.times { @wall.push(Wall.new(self,rand(32..WIDTH - 64),rand(32..HEIGHT - 64))) }
+		20.times do
+			walls = @wall
+			too_close = true
+			until too_close == false
+				wall_x = rand(32..WIDTH - 64)
+				wall_y = rand(32..HEIGHT - 64)
+				walls.each do |wall|
+					too_close = false if (wall.x + 32 > wall_x || wall.x - 32 < wall_x) && (wall.y + 32 > wall_y || wall.y - 32 < wall_y)
+				end
+				@wall.push(Wall.new(self,wall_x,wall_y))
+			end
+		end
+		# Fourth and this will be moved later, spawn some enemies.
+		10.times do
+			too_close = true
+			until too_close == false
+				skel_x = rand(32..WIDTH - 64)
+				skel_y = rand(32..HEIGHT - 64)
+				@wall.each do |wall|
+					too_close = false if (wall.x + 34 > skel_x || wall.x - 34 < skel_x) && (wall.y + 34 > skel_y || wall.y - 34 < skel_y)
+				end
+				@enemies.push(Skeleton.new(self,skel_x,skel_y))
+			end
+		end
 	end
 
   def needs_cursor?
@@ -191,7 +214,7 @@ class Roguely < Gosu::Window
 		end
 		@player.update_bounds
 		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
-		@colliding = colliding?(@player.direction, @wall)
+		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true
 	end
 
@@ -213,6 +236,7 @@ class Roguely < Gosu::Window
 		@player.draw
 		@floor.each { |floor| floor.draw }
 		@wall.each { |wall| wall.draw }
+		@enemies.each {|enemy| enemy.draw }
 	end
 
 	def draw_start
