@@ -1,6 +1,6 @@
 # Roguely Game Window
 
-DEBUG = true # set to false to turn off bounding boxes etc.
+DEBUG = false # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -49,24 +49,48 @@ class Roguely < Gosu::Window
 	def colliding?(direction, ents)
 		case direction
 		when :left
-			(ents.select {|ent| ent.x < @player.x}).each do |ent|
-				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
-				return true if distance < ent.radius + @player.width / 3
+			(ents.select {|ent| ent.b_right < @player.b_left}).each do |ent|
+				ent.height.times do |ent_y|
+					next unless ent_y % 2 == 0
+					@player.height.times do |play_y|
+						next unless play_y % 2 == 0
+						distance = Gosu.distance(ent.b_right, ent.b_top + ent_y, @player.b_left, @player.y + play_y)
+						return true if distance < 4
+					end
+				end
 			end
 		when :right
-			(ents.select {|ent| ent.x > @player.x}).each do |ent|
-				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
-				return true if distance < ent.radius + @player.width / 3
+			(ents.select {|ent| ent.b_left > @player.b_right}).each do |ent|
+				ent.height.times do |ent_y|
+					next unless ent_y % 2 == 0
+					@player.height.times do |play_y|
+						next unless play_y % 2 == 0
+						distance = Gosu.distance(ent.b_left, ent.b_top + ent_y, @player.b_right, @player.y + play_y)
+						return true if distance < 4
+					end
+				end
 			end
 		when :up
-			(ents.select {|ent| ent.y < @player.y}).each do |ent|
-				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
-				return true if distance < ent.radius + @player.width / 2
+			(ents.select {|ent| ent.b_low > @player.b_top}).each do |ent|
+				ent.height.times do |ent_x|
+					next unless ent_x % 4 == 0
+					@player.height.times do |play_x|
+						next unless play_x % 4 == 0
+						distance = Gosu.distance(ent.b_left + ent_x, ent.b_low, @player.b_left + play_x, @player.b_top)
+						return true if distance < 4
+					end
+				end
 			end
 		when :down
-			(ents.select {|ent| ent.y > @player.y}).each do |ent|
-				distance = Gosu.distance(ent.x + ent.radius, ent.y + ent.radius, @player.x + @player.width / 2, @player.y + @player.height / 2)
-				return true if distance < ent.radius + @player.width / 2
+			(ents.select {|ent| ent.b_top > @player.b_low}).each do |ent|
+				ent.height.times do |ent_x|
+					next unless ent_x % 4 == 0
+					@player.height.times do |play_x|
+						next unless play_x % 4 == 0
+						distance = Gosu.distance(ent.b_left + ent_x, ent.b_top, @player.b_left + play_x, @player.b_low)
+						return true if distance < 4
+					end
+				end
 			end
 		end
 	end
@@ -99,6 +123,10 @@ class Roguely < Gosu::Window
 			end
 			x = WIDTH - 32
 		end
+		# Third, randomly distribute some wall pieces around the map
+		@x = rand * 640
+    @y = rand * 480
+		20.times { @wall.push(Wall.new(self,rand(32..WIDTH - 64),rand(32..HEIGHT - 64))) }
 	end
 
   def needs_cursor?
@@ -163,7 +191,7 @@ class Roguely < Gosu::Window
 		end
 		@player.update_bounds
 		#@player.velocity = 10 if button_down?(Gosu::KbLeftShift)# || button_down?(Gosu::KbA)
-		@colliding = false#colliding?(@player.direction, @wall)
+		@colliding = colliding?(@player.direction, @wall)
     @player.move unless @colliding == true
 	end
 

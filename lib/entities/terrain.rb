@@ -3,7 +3,7 @@
 
 class Terrain
 
-  attr_reader :x, :y, :middle, :radius
+  attr_reader :x, :y, :middle, :radius, :width, :height, :b_left, :b_right, :b_top, :b_low
 
   def initialize(window, x, y)
     @window = window
@@ -13,6 +13,13 @@ class Terrain
     @radius = 16 # Trying this with my 32 pixel tiles
     @scale = 2
     @image = Gosu::Image.new(File.join(SPRITES, 'tile', 'floor.png'), { tileable: true })
+    # bounding variables
+    @width = 32
+    @height = 32
+    @b_left = @x
+    @b_right = @x + @width
+    @b_top = @y
+    @b_low = @y + @height
   end
 
   def draw
