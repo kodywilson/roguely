@@ -1,6 +1,6 @@
 # Roguely Game Window
 
-DEBUG = true # set to false to turn off bounding boxes etc.
+DEBUG = false # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -214,8 +214,8 @@ class Roguely < Gosu::Window
 		end
 		@player.update_bounds
 		@player.animation
-		colliding?(@player.direction)
-    @player.move unless @player.colliding == true || @player.attacking == true || @player.moving == false
+		@colliding = colliding?(@player.direction)
+    @player.move unless @colliding == true || @player.attacking == true || @player.moving == false
 	end
 
 	def update_start
