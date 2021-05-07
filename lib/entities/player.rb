@@ -110,7 +110,7 @@ class Player
       counter = 0
     end
 		if DEBUG
-      @font.draw_text("Moving?: #{@moving}  Attacking?: #{@attacking}  Colliding?: #{@colliding}",180,660,1,1,1,Gosu::Color::RED)
+      @font.draw_text("Moving?: #{@moving}  Attacking?: #{@attacking}  Colliding?: #{@colliding}",180,660,1,1,1,@color)
       # Draw cross centered on player
       Gosu::draw_line(@x + @width / 2,@y,@color,@x + @width / 2,@y + @height,@color,2)
       Gosu::draw_line(@x,@y + @height / 2,@color,@x + @width,@y + @height / 2,@color,2)

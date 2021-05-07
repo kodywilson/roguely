@@ -1,6 +1,6 @@
 # Roguely Game Window
 
-DEBUG = false # set to false to turn off bounding boxes etc.
+DEBUG = true # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -157,7 +157,7 @@ class Roguely < Gosu::Window
 				skel_x = rand(32..WIDTH - 64)
 				skel_y = rand(32..HEIGHT - 64)
 				@wall.each do |wall|
-					too_close = false if (wall.x + 34 > skel_x || wall.x - 34 < skel_x) && (wall.y + 34 > skel_y || wall.y - 34 < skel_y)
+					too_close = false if (wall.x + 36 > skel_x || wall.x - 36 < skel_x) && (wall.y + 36 > skel_y || wall.y - 36 < skel_y)
 				end
 				@enemies.push(Skeleton.new(self,skel_x,skel_y))
 			end
