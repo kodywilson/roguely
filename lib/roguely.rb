@@ -1,6 +1,6 @@
 # Roguely Game Window
 
-DEBUG = true # set to false to turn off bounding boxes etc.
+DEBUG = false # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
 TEXT = File.join(GAME_ROOT, 'assets/text')
@@ -43,7 +43,7 @@ class Roguely < Gosu::Window
     @scene = :game
     @enemies_appeared = 0
     @enemies_destroyed = 0
-		@slick = 10 # Increase to reduce object collision stickiness
+		@slick = 8 # Increase to reduce object collision stickiness
     # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
     # @game_music.play(true)
   end
@@ -59,7 +59,7 @@ class Roguely < Gosu::Window
 						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_right, ent.b_top + ent_y, @player.b_left, @player.y + play_y)
 						if distance < 4
-							ent.attacking = true if ent.respond_to? :attacking
+							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -73,7 +73,7 @@ class Roguely < Gosu::Window
 						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_left, ent.b_top + ent_y, @player.b_right, @player.y + play_y)
 						if distance < 5
-							ent.attacking = true if ent.respond_to? :attacking
+							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -87,7 +87,7 @@ class Roguely < Gosu::Window
 						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_low, @player.b_left + play_x, @player.b_top)
 						if distance < 4
-							ent.attacking = true if ent.respond_to? :attacking
+							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -101,7 +101,7 @@ class Roguely < Gosu::Window
 						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_top, @player.b_left + play_x, @player.b_low)
 						if distance < 4
-							ent.attacking = true if ent.respond_to? :attacking
+							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -146,10 +146,11 @@ class Roguely < Gosu::Window
 				wall_x = rand(32..WIDTH - 64)
 				wall_y = rand(32..HEIGHT - 64)
 				walls.each do |wall|
-					too_close = false if (wall.x + 32 > wall_x || wall.x - 32 < wall_x) && (wall.y + 32 > wall_y || wall.y - 32 < wall_y)
+					too_close = false if Gosu.distance(wall_x + 16, wall_y + 16, wall.x + 16, wall.y + 16) > 100
+					#too_close = false if ( wall_x > wall.x + 32 || wall_x < wall.x - 32 ) && (wall_y > wall.y + 32 || wall_y < wall.y - 32)
 				end
-				@wall.push(Wall.new(self,wall_x,wall_y))
 			end
+			@wall.push(Wall.new(self,wall_x,wall_y))
 		end
 		# Fourth and this will be moved later, spawn some enemies.
 		10.times do
@@ -158,10 +159,10 @@ class Roguely < Gosu::Window
 				skel_x = rand(32..WIDTH - 64)
 				skel_y = rand(32..HEIGHT - 64)
 				@wall.each do |wall|
-					too_close = false if (wall.x + 36 > skel_x || wall.x - 36 < skel_x) && (wall.y + 36 > skel_y || wall.y - 36 < skel_y)
+					too_close = false if ( skel_x > wall.x + 40 || skel_x < wall.x - 40 ) && (skel_y > wall.y + 40 || skel_y < wall.y - 40)
 				end
-				@enemies.push(Skeleton.new(self,skel_x,skel_y))
 			end
+			@enemies.push(Skeleton.new(self,skel_x,skel_y))
 		end
 	end
 
@@ -229,7 +230,26 @@ class Roguely < Gosu::Window
 		@player.animation
 		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true || @player.attacking == true || @player.moving == false
-		@enemies.each {|enemy| enemy.animation }
+		@enemies.each do |enemy|
+			enemy.update_bounds
+			distance = Gosu.distance(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
+			if distance < 70 && distance > 20 # Chase the player!
+				target_angle = Gosu.angle(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
+				direction = case
+				when target_angle > 225.0 && target_angle < 315.0
+					:left
+				when target_angle > 45.0 && target_angle < 135.0
+					:right
+				when ( target_angle > 315.0 && target_angle < 360.0 ) || (target_angle > 0.0 && target_angle < 45.0)
+					:up
+				when target_angle > 135.0 && target_angle < 225.0
+					:down
+				end
+				enemy.move(direction)
+			end
+			enemy.attacking = true if distance < 25 # could adjust based on direction
+			enemy.animation
+		end
 	end
 
 	def update_start
@@ -251,6 +271,7 @@ class Roguely < Gosu::Window
 		@floor.each { |floor| floor.draw }
 		@wall.each { |wall| wall.draw }
 		@enemies.each {|enemy| enemy.draw }
+		@start_font.draw_text(@target_angle.to_s,180,560,1,1,1,Gosu::Color::RED)
 	end
 
 	def draw_start

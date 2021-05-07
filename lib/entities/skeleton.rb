@@ -31,6 +31,8 @@ class Skeleton
     @b_low = @y + @height
     @attacking = false
     @@enemies_appeared += 1
+    @direction = :left
+    @velocity = 1
   end
 
   def animation
@@ -48,6 +50,32 @@ class Skeleton
       #idle: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "idle", "warrior_idle.png"), 128, 88),
       attack: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_attack.png"), 43, 37)
     }
+  end
+
+  def move(direction)
+    case direction
+    when :left
+      @x -= @velocity
+    when :right
+      @x += @velocity
+    when :up
+      @y -= @velocity
+    when :down
+      @y += @velocity
+    when :nowhere
+      # Don't do anything
+    end
+  end
+
+  def update_bounds
+    @b_left = @x
+    @b_right = @x + @width
+    @b_top = @y
+    @b_low = @y + @height
+    # @b_left = @x + @width / 4
+    # @b_right = @x + @width * 3 / 4
+    # @b_top = @y + 2
+    # @b_low = @y + @height
   end
 
   def draw
