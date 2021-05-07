@@ -32,6 +32,7 @@ class Roguely < Gosu::Window
       y += 30
     end
 		@player = Player.new(self,680,280)
+		@player.intro = true
   end
 
 	def initialize_game
@@ -247,7 +248,10 @@ class Roguely < Gosu::Window
 				end
 				enemy.move(direction)
 			end
-			enemy.attacking = true if distance < 25 # could adjust based on direction
+			if distance < 25 && enemy.attacking == false && enemy.hit_timer < Gosu.milliseconds # could adjust based on direction
+				damage_2_player = enemy.attack 	
+				@player.current_health -= damage_2_player
+			end
 			enemy.animation
 		end
 	end
