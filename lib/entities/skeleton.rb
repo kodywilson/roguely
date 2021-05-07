@@ -4,7 +4,7 @@ class Skeleton
 
   SKEL_LOC = File.join(SPRITES, 'npc', 'skeleton')
 
-  attr_reader :x, :y, :radius, :width, :height, :b_left, :b_right, :b_top, :b_low
+  attr_reader :x, :y, :radius, :width, :height, :b_left, :b_right, :b_top, :b_low, :hit_timer
   attr_accessor :attacking
 
   @@enemies_appeared ||= 0
@@ -33,6 +33,7 @@ class Skeleton
     @@enemies_appeared += 1
     @direction = :left
     @velocity = 1
+    @hit_timer = 0
   end
 
   def animation
@@ -42,6 +43,10 @@ class Skeleton
 
   def attack
     @attacking = true
+    @hit_timer = Gosu.milliseconds + 4000
+    damage = 0
+    damage = rand(1..3) if rand(1..10) > 7
+    return damage
   end
 
   def load_images

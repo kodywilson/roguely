@@ -7,7 +7,7 @@ class Player
   MAX_SPEED = 5
 
   attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking
-  attr_accessor :colliding, :direction, :middle, :moving, :velocity
+  attr_accessor :colliding, :direction, :intro, :middle, :moving, :velocity, :current_health
 
   def initialize(window, x, y)
     @x = x
@@ -37,6 +37,9 @@ class Player
     @b_top = @y + 2
     @b_low = @y + @height
     @attacking = false
+    @current_health = 100.00
+    @max_health = 100.00
+    @intro = false
   end
 
   def attack(direction)
@@ -109,6 +112,10 @@ class Player
       @image_index = 0
       counter = 0
     end
+    # Health Bar
+    bar_x = @current_health >= 1 ? @current_health / @max_health : 0
+    Gosu::draw_line(@b_left,@b_top,@color,@b_left + @width * bar_x, @b_top,@color,2) unless @intro
+    @font.draw_text("Current Health: #{@current_health}",180,690,1,1,1,Gosu::Color::RED)
 		if DEBUG
       @font.draw_text("Moving?: #{@moving}  Attacking?: #{@attacking}  Colliding?: #{@colliding}",180,660,1,1,1,@color)
       # Draw cross centered on player
