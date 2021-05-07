@@ -34,7 +34,7 @@ class Player
     # bounding variables
     @b_left = @x + @width / 4
     @b_right = @x + @width * 3 / 4
-    @b_top = @y + @height / 8
+    @b_top = @y + 2
     @b_low = @y + @height
     @attacking = false
   end
@@ -138,7 +138,7 @@ class Player
   def update_bounds
     @b_left = @x + @width / 4
     @b_right = @x + @width * 3 / 4
-    @b_top = @y + @height / 8
+    @b_top = @y + 2
     @b_low = @y + @height
   end
 

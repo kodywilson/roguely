@@ -43,6 +43,7 @@ class Roguely < Gosu::Window
     @scene = :game
     @enemies_appeared = 0
     @enemies_destroyed = 0
+		@slick = 10 # Increase to reduce object collision stickiness
     # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
     # @game_music.play(true)
   end
@@ -53,9 +54,9 @@ class Roguely < Gosu::Window
 		when :left
 			(ents.select {|ent| ent.b_right < @player.b_left}).each do |ent|
 				ent.height.times do |ent_y|
-					next unless ent_y % 2 == 0
+					next unless ent_y % 2 == 0 && ent_y >= @slick && ent_y <= ent.height - @slick
 					@player.height.times do |play_y|
-						next unless play_y % 2 == 0
+						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_right, ent.b_top + ent_y, @player.b_left, @player.y + play_y)
 						if distance < 4
 							ent.attacking = true if ent.respond_to? :attacking
@@ -67,11 +68,11 @@ class Roguely < Gosu::Window
 		when :right
 			(ents.select {|ent| ent.b_left > @player.b_right}).each do |ent|
 				ent.height.times do |ent_y|
-					next unless ent_y % 2 == 0
+					next unless ent_y % 2 == 0 && ent_y >= @slick && ent_y <= ent.height - @slick
 					@player.height.times do |play_y|
-						next unless play_y % 2 == 0
+						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_left, ent.b_top + ent_y, @player.b_right, @player.y + play_y)
-						if distance < 4
+						if distance < 5
 							ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
@@ -81,9 +82,9 @@ class Roguely < Gosu::Window
 		when :up
 			(ents.select {|ent| ent.b_low > @player.b_top}).each do |ent|
 				ent.height.times do |ent_x|
-					next unless ent_x % 4 == 0
+					next unless ent_x % 2 == 0 && ent_x >= @slick && ent_x <= ent.width - @slick
 					@player.height.times do |play_x|
-						next unless play_x % 4 == 0
+						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_low, @player.b_left + play_x, @player.b_top)
 						if distance < 4
 							ent.attacking = true if ent.respond_to? :attacking
@@ -95,9 +96,9 @@ class Roguely < Gosu::Window
 		when :down
 			(ents.select {|ent| ent.b_top > @player.b_low}).each do |ent|
 				ent.height.times do |ent_x|
-					next unless ent_x % 4 == 0
+					next unless ent_x % 2 == 0 && ent_x >= @slick && ent_x <= ent.width - @slick
 					@player.height.times do |play_x|
-						next unless play_x % 4 == 0
+						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_top, @player.b_left + play_x, @player.b_low)
 						if distance < 4
 							ent.attacking = true if ent.respond_to? :attacking
