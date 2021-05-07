@@ -43,7 +43,7 @@ class Skeleton
 
   def attack
     @attacking = true
-    @hit_timer = Gosu.milliseconds + 3000
+    @hit_timer = Gosu.milliseconds + 4000
     damage = 0
     damage = rand(1..3) if rand(1..10) > 7
     return damage
