@@ -57,7 +57,10 @@ class Roguely < Gosu::Window
 					@player.height.times do |play_y|
 						next unless play_y % 2 == 0
 						distance = Gosu.distance(ent.b_right, ent.b_top + ent_y, @player.b_left, @player.y + play_y)
-						return true if distance < 4
+						if distance < 4
+							ent.attacking = true if ent.respond_to? :attacking
+							return true
+						end
 					end
 				end
 			end
@@ -68,7 +71,10 @@ class Roguely < Gosu::Window
 					@player.height.times do |play_y|
 						next unless play_y % 2 == 0
 						distance = Gosu.distance(ent.b_left, ent.b_top + ent_y, @player.b_right, @player.y + play_y)
-						return true if distance < 4
+						if distance < 4
+							ent.attacking = true if ent.respond_to? :attacking
+							return true
+						end
 					end
 				end
 			end
@@ -79,7 +85,10 @@ class Roguely < Gosu::Window
 					@player.height.times do |play_x|
 						next unless play_x % 4 == 0
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_low, @player.b_left + play_x, @player.b_top)
-						return true if distance < 4
+						if distance < 4
+							ent.attacking = true if ent.respond_to? :attacking
+							return true
+						end
 					end
 				end
 			end
@@ -90,7 +99,10 @@ class Roguely < Gosu::Window
 					@player.height.times do |play_x|
 						next unless play_x % 4 == 0
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_top, @player.b_left + play_x, @player.b_low)
-						return true if distance < 4
+						if distance < 4
+							ent.attacking = true if ent.respond_to? :attacking
+							return true
+						end
 					end
 				end
 			end
@@ -216,6 +228,7 @@ class Roguely < Gosu::Window
 		@player.animation
 		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true || @player.attacking == true || @player.moving == false
+		@enemies.each {|enemy| enemy.animation }
 	end
 
 	def update_start

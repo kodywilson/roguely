@@ -41,9 +41,13 @@ class Player
 
   def attack(direction)
     case @direction
-    when :left || :up
+    when :left
       @frames = @images[:attack][0..11]
-    when :right || :down
+    when :up
+      @frames = @images[:attack][0..11]
+    when :right
+      @frames = @images[:attack][12..23]
+    when :down
       @frames = @images[:attack][12..23]
     end
     @attacking = true
