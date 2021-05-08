@@ -37,13 +37,13 @@ class Roguely < Gosu::Window
 
 	def initialize_game
     @player = Player.new(self,100,600)
+		@enemies_appeared = 0
+    @enemies_destroyed = 0
     @enemies = []
 		@floor = []
 		@wall = []
 		lay_tile
     @scene = :game
-    @enemies_appeared = 0
-    @enemies_destroyed = 0
 		@slick = 8 # Increase to reduce object collision stickiness
     # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
     # @game_music.play(true)
@@ -164,6 +164,7 @@ class Roguely < Gosu::Window
 				end
 			end
 			@enemies.push(Skeleton.new(self,skel_x,skel_y))
+			@enemies_appeared += 1
 		end
 	end
 
@@ -174,9 +175,13 @@ class Roguely < Gosu::Window
   def button_down_game(id)
 		# use later for shooting arrows
     if id == Gosu::KbSpace
-			@player.attack(@player.direction)
-      # @arrows.push(Bullet.new(self, @player.x, @player.y, @player.angle))
-      # @shooting_sound.play(0.3)
+			if @player.attacking == false && @player.hit_timer < Gosu.milliseconds
+				@enemies.each do |enemy|
+					next if Gosu.distance(@player.x + @player.width / 2, @player.y + @player.height / 2, enemy.x + enemy.width / 2, enemy.y + enemy.height / 2) > 25
+					damage_2_enemy = @player.attack(@player.direction)
+					enemy.current_health -= damage_2_enemy
+				end
+			end
     end
 		if id == Gosu::KbEscape
 			initialize
@@ -216,10 +221,6 @@ class Roguely < Gosu::Window
 	def update_game
 		if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA) || button_down?(Gosu::KbRight) || button_down?(Gosu::KbD) || button_down?(Gosu::KbUp) || button_down?(Gosu::KbW) || button_down?(Gosu::KbDown) || button_down?(Gosu::KbS)
 			@player.moving = true
-			# Although it is more realistic, I'm not convinced that I like the "feel" of acceleration. It ends up feeling "sticky"...
-			# using gosu offset might feel smoother.
-			#@player.velocity += 1 if Gosu.milliseconds % 10 == 0
-			#@player.velocity = 5
 			@player.direction = :left if button_down?(Gosu::KbLeft) || button_down?(Gosu::KbA)
     	@player.direction = :right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
 			@player.direction = :up if button_down?(Gosu::KbUp) || button_down?(Gosu::KbW)
@@ -231,7 +232,7 @@ class Roguely < Gosu::Window
 		@player.animation
 		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true || @player.attacking == true || @player.moving == false
-		@enemies.each do |enemy|
+		@enemies.dup.each do |enemy|
 			enemy.update_bounds
 			distance = Gosu.distance(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
 			if distance < 70 && distance > 20 # Chase the player!
@@ -253,6 +254,10 @@ class Roguely < Gosu::Window
 				@player.current_health -= damage_2_player
 			end
 			enemy.animation
+			if enemy.current_health <= 0
+				@enemies.delete enemy
+				@enemies_destroyed += 1
+			end
 		end
 	end
 

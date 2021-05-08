@@ -6,7 +6,7 @@ class Player
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
   MAX_SPEED = 5
 
-  attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking
+  attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking, :hit_timer
   attr_accessor :colliding, :direction, :intro, :middle, :moving, :velocity, :current_health
 
   def initialize(window, x, y)
@@ -40,6 +40,7 @@ class Player
     @current_health = 100.00
     @max_health = 100.00
     @intro = false
+    @hit_timer = 0
   end
 
   def attack(direction)
@@ -54,6 +55,10 @@ class Player
       @frames = @images[:attack][12..23]
     end
     @attacking = true
+    @hit_timer = Gosu.milliseconds + 1000
+    damage = 0
+    damage = rand(1..5) if rand(1..10) > 5
+    return damage
   end
 
   def accelerate
@@ -115,21 +120,13 @@ class Player
     # Health Bar
     bar_x = @current_health >= 1 ? @current_health / @max_health : 0
     Gosu::draw_line(@b_left,@b_top,@color,@b_left + @width * bar_x, @b_top,@color,2) unless @intro
-    @font.draw_text("Current Health: #{@current_health}",180,690,1,1,1,Gosu::Color::RED)
+    #@font.draw_text("Current Health: #{@current_health}",180,690,1,1,1,Gosu::Color::RED)
 		if DEBUG
       @font.draw_text("Moving?: #{@moving}  Attacking?: #{@attacking}  Colliding?: #{@colliding}",180,660,1,1,1,@color)
       # Draw cross centered on player
       Gosu::draw_line(@x + @width / 2,@y,@color,@x + @width / 2,@y + @height,@color,2)
       Gosu::draw_line(@x,@y + @height / 2,@color,@x + @width,@y + @height / 2,@color,2)
-      # Draw box around player - quads are solid so better to use lines
-      #.draw_quad(x1, y1, c1, x2, y2, c2, x3, y3, c3, x4, y4, c4, z = 0, mode = :default)
-      #Gosu::draw_quad(@x + @width / 4, @y + @height / 4, @color, @x + @width * 3 / 4, @y + @height / 4, @color, @x + @width * 3 / 4, @y + @height * 3 / 4, @color, @x, @y + @height * 3 / 4, @color, 3)
-      # Scaling really makes this more funky - here's a bpx using the width and height
-      # Gosu::draw_line(@x,@y,@color,@x + @width,@y,@color,2)
-      # Gosu::draw_line(@x + @width,@y,@color,@x + @width,@y + @height,@color,2)
-      # Gosu::draw_line(@x,@y,@color,@x,@y + @height,@color,2)
-      # Gosu::draw_line(@x,@y + height,@color,@x + @width,@y + @height,@color,2)
-      # and now one that represents the player's bounds box
+      # Draw he player's bounds box
       Gosu::draw_line(@b_left,@b_top,@color,@b_right,@b_top,@color,2)
       Gosu::draw_line(@b_right,@b_top,@color,@b_right,@b_low,@color,2)
       Gosu::draw_line(@b_left,@b_top,@color,@b_left,@b_low,@color,2)
