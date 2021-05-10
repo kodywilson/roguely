@@ -11,6 +11,7 @@ class Skeleton
 
   def initialize(window, x, y)
     @window = window
+    @mode = window.mode
     @x = x
     @y = y
     @z = 2
@@ -35,8 +36,8 @@ class Skeleton
     @direction = :left
     @velocity = 1
     @hit_timer = 0
-    @current_health = 10.00
-    @max_health = 10.00
+    @current_health = @mode == :normal ? 10.00 : 20.00
+    @max_health =  @mode == :normal ? 10.00 : 20.00
   end
 
   def animation
@@ -53,8 +54,9 @@ class Skeleton
   def attack
     @attacking = true
     @hit_timer = Gosu.milliseconds + 2000
+    max_hit = @mode == :normal ? 3 : 5
     damage = 0
-    damage = rand(1..3) if rand(1..10) > 6
+    damage = rand(1..max_hit) if rand(1..10) > 6
     return damage
   end
 
