@@ -17,6 +17,8 @@ class Roguely < Gosu::Window
   WIDTH = 1024
   HEIGHT = 768
 
+  attr_reader :mode
+
   def initialize
     super(WIDTH,HEIGHT)
 		self.caption = 'Roguely'
@@ -24,7 +26,7 @@ class Roguely < Gosu::Window
 		@start_font = Gosu::Font.new(32, { name: FONT })
 		@top_font = Gosu::Font.new(64, { name: FONT })
 		@top_message = "Roguely"
-		@bottom_message = "Press < space > to begin the game, < q > to quit."
+		@bottom_message = "Press < space > for normal mode, < h > for hard, < q > to quit."
 		@intro = []
     y = 700
     File.open(File.join(TEXT, 'intro.txt')).each do |line|
@@ -154,7 +156,8 @@ class Roguely < Gosu::Window
 			@wall.push(Wall.new(self,wall_x,wall_y))
 		end
 		# Fourth and this will be moved later, spawn some enemies.
-		10.times do
+    num_enemies = @mode == :normal ? 10 : 20  # Difficulty adjusted
+		num_enemies.times do
 			too_close = true
 			until too_close == false
 				skel_x = rand(32..WIDTH - 64)
@@ -188,7 +191,7 @@ class Roguely < Gosu::Window
 		end
 		if id == Gosu::KbLeftShift # Toggle sprinting
 			if @player.velocity == 3
-				@player.velocity = 6
+				@player.velocity = 5
 			else
 				@player.velocity = 3
 			end
@@ -197,7 +200,14 @@ class Roguely < Gosu::Window
 
   def button_down_start(id)
 		# start and end are the same now, but eventually you will have more options
-    initialize_game if id == Gosu::KbSpace
+    if id == Gosu::KbSpace
+      @mode = :normal  # Difficulty adjusted
+      initialize_game
+    end
+    if id == Gosu::KbH
+      @mode = :hard  # Difficulty adjusted
+      initialize_game
+    end
     close if id == Gosu::KbQ
   end
 
@@ -235,7 +245,8 @@ class Roguely < Gosu::Window
 		@enemies.dup.each do |enemy|
 			enemy.update_bounds
 			distance = Gosu.distance(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
-			if distance < 70 && distance > 20 # Chase the player!
+			getcha = @mode == :normal ? 70 : 140  # Difficulty adjusted
+      if distance < getcha && distance > 20 # Chase the player!
 				target_angle = Gosu.angle(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
 				direction = case
 				when target_angle > 225.0 && target_angle < 315.0
@@ -249,6 +260,7 @@ class Roguely < Gosu::Window
 				end
 				enemy.move(direction)
 			end
+      smacky = @mode == :normal ? 25 : 40 # Difficulty adjusted
 			if distance < 25 && enemy.attacking == false && enemy.hit_timer < Gosu.milliseconds # could adjust based on direction
 				damage_2_player = enemy.attack 	
 				@player.current_health -= damage_2_player
