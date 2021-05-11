@@ -1,0 +1,16 @@
+Roguely.
+by Kody Wilson
+
+This game was made with Gosu and Ruby
+as part of a tutorial on game development
+and programming.
+
+I hope you enjoyed playing!
+
+** Credits **
+
+Warrior.
+
+Skeleton.
+
+Music.

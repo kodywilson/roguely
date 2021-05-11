@@ -5,7 +5,7 @@ class Skeleton
   SKEL_LOC = File.join(SPRITES, 'npc', 'skeleton')
 
   attr_reader :x, :y, :radius, :width, :height, :b_left, :b_right, :b_top, :b_low, :hit_timer
-  attr_accessor :attacking, :current_health
+  attr_accessor :attacking, :current_health, :direction
 
   @@enemies_appeared ||= 0
 
@@ -20,7 +20,7 @@ class Skeleton
     @color = Gosu::Color::RED
     @font = Gosu::Font.new(28)
     @images = load_images
-    @frames = @images[:walk]
+    @frames = @images[:walk_left]
     # bounding variables
     @image_index = 0
     @finished = false
@@ -41,8 +41,14 @@ class Skeleton
   end
 
   def animation
-    @frames = @images[:walk]
-    @frames = @images[:attack] if @attacking == true
+    case @direction
+    when :left
+      @frames = @images[:walk_left]
+      @frames = @images[:attack_left] if @attacking == true
+    when :right
+      @frames = @images[:walk_right]
+      @frames = @images[:attack_right] if @attacking == true
+    end
   end
 
   def attack
@@ -56,13 +62,16 @@ class Skeleton
 
   def load_images
     {
-      walk: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_walk.png"), 22, 33),
+      walk_right: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_walk.png"), 22, 33),
+      walk_left: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_walk_left.png"), 22, 33),
       #idle: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "idle", "warrior_idle.png"), 128, 88),
-      attack: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_attack.png"), 43, 37)
+      attack_right: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_attack.png"), 43, 37),
+      attack_left: Gosu::Image.load_tiles(File.join(SKEL_LOC, "skeleton_attack_left.png"), 43, 37)
     }
   end
 
   def move(direction)
+    @direction = direction
     case direction
     when :left
       @x -= @velocity
