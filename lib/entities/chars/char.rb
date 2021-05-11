@@ -1,21 +1,35 @@
-# Player sprite class
-class Player < Char
+# Character base class
+class Char
 
-  IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
-  MAX_SPEED = 5
+  attr_reader :x, :y, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking, :hit_timer
+  attr_accessor :colliding, :direction, :intro, :moving, :velocity, :current_health
 
   def initialize(window, x, y)
-    super
+    @window = window
+    @x = x
+    @y = y
+    @direction = :left
+    @moving = false
+    @colliding = false
+    @attacking = false
+    @intro = false
+    @finished = false
+    @counter = 0
+    @hit_timer = 0
+    @image_index = 0
     @font = Gosu::Font.new(28)
     @images = load_images
     @frames = @images[:idle][0..5]
     @height = @frames[0].height / 2
     @width = @frames[0].width / 2
     @color = Gosu::Color::RED
-    # bounding variables # overide defaults, sprite is oddly shaped
-    @b_left = @x + @width / 4
-    @b_right = @x + @width * 3 / 4
-    @b_top = @y + 2
+    @velocity = 3
+    @current_health = 100.00
+    @max_health = 100.00
+    # bounding variables
+    @b_left = @x
+    @b_right = @x + @width
+    @b_top = @y
     @b_low = @y + @height
   end
 
@@ -36,7 +50,7 @@ class Player < Char
     damage = rand(1..5) if rand(1..10) > 5
     return damage
   end
-
+  
   def load_images
     {
       running: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "run", "warrior_run_x2.png"), 128, 88),

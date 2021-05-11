@@ -4,7 +4,7 @@ class Skeleton
 
   SKEL_LOC = File.join(SPRITES, 'npc', 'skeleton')
 
-  attr_reader :x, :y, :radius, :width, :height, :b_left, :b_right, :b_top, :b_low, :hit_timer
+  attr_reader :x, :y, :width, :height, :b_left, :b_right, :b_top, :b_low, :hit_timer
   attr_accessor :attacking, :current_health, :direction
 
   @@enemies_appeared ||= 0
@@ -15,18 +15,17 @@ class Skeleton
     @x = x
     @y = y
     @z = 2
-    @radius = 16 # Trying this with my 32 pixel tiles
     @scale = 1
     @color = Gosu::Color::RED
     @font = Gosu::Font.new(28)
     @images = load_images
     @frames = @images[:walk_left]
-    # bounding variables
     @image_index = 0
     @finished = false
     @counter = 0
     @width = 23
     @height = 33
+    # bounding variables
     @b_left = @x
     @b_right = @x + @width
     @b_top = @y

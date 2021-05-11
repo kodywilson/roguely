@@ -7,11 +7,12 @@ SOUNDS = File.join(GAME_ROOT, 'assets/sounds')
 TEXT = File.join(GAME_ROOT, 'assets/text')
 
 require 'gosu'
+require_relative 'entities/chars/char'
 require_relative 'entities/chars/pc/player'
+require_relative 'entities/chars/npc/skeleton'
 require_relative 'entities/enviro/scroll_text'
 require_relative 'entities/enviro/terrain'
 require_relative 'entities/enviro/wall'
-require_relative 'entities/chars/npc/skeleton'
 
 class Roguely < Gosu::Window
 
@@ -52,8 +53,6 @@ class Roguely < Gosu::Window
 		lay_tile
     @scene = :game
 		@slick = 8 # Increase to reduce object collision stickiness
-    # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
-    # @game_music.play(true)
 		@sword1 = Gosu::Sample.new(File.join(SOUNDS, 'swish_2.wav'))
 		@sword2 = Gosu::Sample.new(File.join(SOUNDS, 'swish_4.wav'))
   end
@@ -69,7 +68,6 @@ class Roguely < Gosu::Window
 						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_right, ent.b_top + ent_y, @player.b_left, @player.y + play_y)
 						if distance < 4
-							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -83,7 +81,6 @@ class Roguely < Gosu::Window
 						next unless play_y % 2 == 0 && play_y >= @slick && play_y <= @player.height - @slick
 						distance = Gosu.distance(ent.b_left, ent.b_top + ent_y, @player.b_right, @player.y + play_y)
 						if distance < 5
-							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -97,7 +94,6 @@ class Roguely < Gosu::Window
 						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_low, @player.b_left + play_x, @player.b_top)
 						if distance < 4
-							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -111,7 +107,6 @@ class Roguely < Gosu::Window
 						next unless play_x % 2 == 0 && play_x >= @slick && play_x <= @player.width - @slick
 						distance = Gosu.distance(ent.b_left + ent_x, ent.b_top, @player.b_left + play_x, @player.b_low)
 						if distance < 4
-							#ent.attacking = true if ent.respond_to? :attacking
 							return true
 						end
 					end
@@ -120,7 +115,7 @@ class Roguely < Gosu::Window
 		end
 	end
 
-	def lay_tile # Har har
+	def lay_tile # Set up game map - this could be refactored
 		# First set out floor tiles
 		x, y = 32, 32
 		23.times do |a|
@@ -157,12 +152,11 @@ class Roguely < Gosu::Window
 				wall_y = rand(32..HEIGHT - 64)
 				walls.each do |wall|
 					too_close = false if Gosu.distance(wall_x + 16, wall_y + 16, wall.x + 16, wall.y + 16) > 100
-					#too_close = false if ( wall_x > wall.x + 32 || wall_x < wall.x - 32 ) && (wall_y > wall.y + 32 || wall_y < wall.y - 32)
 				end
 			end
 			@wall.push(Wall.new(self,wall_x,wall_y))
 		end
-		# Fourth and this will be moved later, spawn some enemies.
+		# Fourth, spawn some enemies
     num_enemies = @mode == :normal ? 10 : 20  # Difficulty adjusted
 		num_enemies.times do
 			too_close = true
@@ -183,7 +177,6 @@ class Roguely < Gosu::Window
   end
 
   def button_down_game(id)
-		# use later for shooting arrows
     if id == Gosu::KbSpace
 			if @player.attacking == false && @player.hit_timer < Gosu.milliseconds
 				@enemies.each do |enemy|
@@ -220,11 +213,6 @@ class Roguely < Gosu::Window
     close if id == Gosu::KbQ
   end
 
-  def button_down_end(id)
-    initialize_game if id == Gosu::KbSpace
-    close if id == Gosu::KbQ
-  end
-
   def button_down(id)
 		# Keys do different things depending on scene
     case @scene
@@ -232,8 +220,6 @@ class Roguely < Gosu::Window
       button_down_start(id)
     when :game
       button_down_game(id)
-    when :end
-      button_down_end(id)
     end
   end
 
@@ -251,11 +237,12 @@ class Roguely < Gosu::Window
 		@player.animation
 		@colliding = colliding?(@player.direction)
     @player.move unless @colliding == true || @player.attacking == true || @player.moving == false
+		# Process enemy attacks and movement toward player
 		@enemies.dup.each do |enemy|
 			enemy.update_bounds
 			distance = Gosu.distance(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
 			getcha = @mode == :normal ? 70 : 140  # Difficulty adjusted
-      if distance < getcha && distance > 20 # Chase the player!
+      if distance < getcha && distance > 15 # Chase the player!
 				target_angle = Gosu.angle(enemy.x + enemy.width / 2, enemy.y + enemy.height / 2, @player.x + @player.width / 2, @player.y + @player.height / 2)
 				direction = case
 				when target_angle > 225.0 && target_angle < 315.0
@@ -270,7 +257,7 @@ class Roguely < Gosu::Window
 				enemy.move(direction)
 			end
       smacky = @mode == :normal ? 25 : 40 # Difficulty adjusted
-			if distance < 25 && enemy.attacking == false && enemy.hit_timer < Gosu.milliseconds # could adjust based on direction
+			if distance < smacky && enemy.attacking == false && enemy.hit_timer < Gosu.milliseconds # could adjust based on direction
 				damage_2_player = enemy.attack 	
 				@player.current_health -= damage_2_player
 			end
@@ -280,6 +267,7 @@ class Roguely < Gosu::Window
 				@enemies_destroyed += 1
 			end
 		end
+		# Check for game ending conditions
 		if @player.current_health <= 0.0 || @enemies_appeared == @enemies_destroyed
 			@game_over = true
 			@end_message = "You defeated all #{@enemies_destroyed} enemies! You win!"
