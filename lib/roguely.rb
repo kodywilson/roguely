@@ -26,10 +26,11 @@ class Roguely < Gosu::Window
 		@start_font = Gosu::Font.new(32, { name: FONT })
 		@top_font = Gosu::Font.new(64, { name: FONT })
 		@top_message = "Roguely"
-		@bottom_message = "Press < space > for normal mode, < h > for hard, < q > to quit."
+		@bottom_message = "Press < n > for normal mode, < h > for hard, < q > to quit."
 		@intro = []
     y = 700
-    File.open(File.join(TEXT, 'intro.txt')).each do |line|
+		@text = @game_over == true ? 'credits.txt' : 'intro.txt'
+    File.open(File.join(TEXT, @text)).each do |line|
       @intro.push(ScrollText.new(self,line.chomp,100,y))
       y += 30
     end
@@ -38,6 +39,7 @@ class Roguely < Gosu::Window
   end
 
 	def initialize_game
+		@game_over = false
     @player = Player.new(self,100,600)
 		@enemies_appeared = 0
     @enemies_destroyed = 0
@@ -200,7 +202,7 @@ class Roguely < Gosu::Window
 
   def button_down_start(id)
 		# start and end are the same now, but eventually you will have more options
-    if id == Gosu::KbSpace
+    if id == Gosu::KbN
       @mode = :normal  # Difficulty adjusted
       initialize_game
     end
@@ -271,6 +273,12 @@ class Roguely < Gosu::Window
 				@enemies_destroyed += 1
 			end
 		end
+		if @player.current_health <= 0.0 || @enemies_appeared == @enemies_destroyed
+			@game_over = true
+			@end_message = "You defeated all #{@enemies_destroyed} enemies! You win!"
+			@end_message = "You defeated #{@enemies_destroyed} enemies before falling. Try again!" if @player.current_health <= 0.0
+			initialize
+		end
 	end
 
 	def update_start
@@ -308,6 +316,7 @@ class Roguely < Gosu::Window
     @top_font.draw_text(@top_message,400,40,1,1,1,Gosu::Color::RED)
 		3.times {|x| draw_line(0,628 + x,Gosu::Color::RED,WIDTH,628 + x,Gosu::Color::RED)}
     @start_font.draw_text(@bottom_message,180,660,1,1,1,Gosu::Color::RED)
+		@start_font.draw_text(@end_message,180,700,1,1,1,Gosu::Color::RED) if @game_over == true
 	end
 
   def draw

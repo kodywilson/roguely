@@ -20,7 +20,7 @@ class Skeleton
     @color = Gosu::Color::RED
     @font = Gosu::Font.new(28)
     @images = load_images
-    @frames = @images[:walk]
+    @frames = @images[:walk_left]
     # bounding variables
     @image_index = 0
     @finished = false
