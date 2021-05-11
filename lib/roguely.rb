@@ -7,11 +7,11 @@ SOUNDS = File.join(GAME_ROOT, 'assets/sounds')
 TEXT = File.join(GAME_ROOT, 'assets/text')
 
 require 'gosu'
-require_relative 'entities/player'
-require_relative 'entities/scroll_text'
-require_relative 'entities/terrain'
-require_relative 'entities/wall'
-require_relative 'entities/skeleton'
+require_relative 'entities/chars/pc/player'
+require_relative 'entities/enviro/scroll_text'
+require_relative 'entities/enviro/terrain'
+require_relative 'entities/enviro/wall'
+require_relative 'entities/chars/npc/skeleton'
 
 class Roguely < Gosu::Window
 
