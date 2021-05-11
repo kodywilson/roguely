@@ -3,6 +3,7 @@
 DEBUG = false # set to false to turn off bounding boxes etc.
 FONT = File.join(GAME_ROOT, 'assets', 'fonts', 'dragonfly.ttf')
 SPRITES = File.join(GAME_ROOT, 'assets/sprites')
+SOUNDS = File.join(GAME_ROOT, 'assets/sounds')
 TEXT = File.join(GAME_ROOT, 'assets/text')
 
 require 'gosu'
@@ -36,6 +37,8 @@ class Roguely < Gosu::Window
     end
 		@player = Player.new(self,680,280)
 		@player.intro = true
+		@start_music = Gosu::Song.new(File.join(SOUNDS, 'Mist_Covered_Mountains.ogg'))
+    @start_music.play(true)
   end
 
 	def initialize_game
@@ -51,6 +54,8 @@ class Roguely < Gosu::Window
 		@slick = 8 # Increase to reduce object collision stickiness
     # @game_music = Gosu::Song.new('sounds/Cephalopod.ogg')
     # @game_music.play(true)
+		@sword1 = Gosu::Sample.new(File.join(SOUNDS, 'swish_2.wav'))
+		@sword2 = Gosu::Sample.new(File.join(SOUNDS, 'swish_4.wav'))
   end
 
 	def colliding?(direction)
@@ -184,6 +189,8 @@ class Roguely < Gosu::Window
 				@enemies.each do |enemy|
 					next if Gosu.distance(@player.x + @player.width / 2, @player.y + @player.height / 2, enemy.x + enemy.width / 2, enemy.y + enemy.height / 2) > 25
 					damage_2_enemy = @player.attack(@player.direction)
+					@sword1.play if damage_2_enemy <= 0
+					@sword2.play if damage_2_enemy >= 1
 					enemy.current_health -= damage_2_enemy
 				end
 			end
