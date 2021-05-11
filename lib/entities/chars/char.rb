@@ -17,20 +17,14 @@ class Char
     @counter = 0
     @hit_timer = 0
     @image_index = 0
+    @z = 2
+    @scale = 1
+    @mode = window.mode
     @font = Gosu::Font.new(28)
-    @images = load_images
-    @frames = @images[:idle][0..5]
-    @height = @frames[0].height / 2
-    @width = @frames[0].width / 2
     @color = Gosu::Color::RED
     @velocity = 3
     @current_health = 100.00
     @max_health = 100.00
-    # bounding variables
-    @b_left = @x
-    @b_right = @x + @width
-    @b_top = @y
-    @b_low = @y + @height
   end
 
   def attack(direction)

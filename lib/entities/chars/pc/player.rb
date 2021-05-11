@@ -12,7 +12,7 @@ class Player < Char
     @height = @frames[0].height / 2
     @width = @frames[0].width / 2
     @color = Gosu::Color::RED
-    # bounding variables # overide defaults, sprite is oddly shaped
+    # bounding variables
     @b_left = @x + @width / 4
     @b_right = @x + @width * 3 / 4
     @b_top = @y + 2

@@ -1,42 +1,27 @@
 # Skeletons!
 
-class Skeleton
+class Skeleton < Char
 
   SKEL_LOC = File.join(SPRITES, 'npc', 'skeleton')
-
-  attr_reader :x, :y, :width, :height, :b_left, :b_right, :b_top, :b_low, :hit_timer
-  attr_accessor :attacking, :current_health, :direction
 
   @@enemies_appeared ||= 0
 
   def initialize(window, x, y)
-    @window = window
-    @mode = window.mode
-    @x = x
-    @y = y
-    @z = 2
-    @scale = 1
-    @color = Gosu::Color::RED
-    @font = Gosu::Font.new(28)
+    super
     @images = load_images
     @frames = @images[:walk_left]
-    @image_index = 0
-    @finished = false
-    @counter = 0
+    @mode = window.mode
     @width = 23
     @height = 33
+    @@enemies_appeared += 1
+    @velocity = 1
+    @current_health = @mode == :normal ? 10.00 : 20.00
+    @max_health =  @mode == :normal ? 10.00 : 20.00
     # bounding variables
     @b_left = @x
     @b_right = @x + @width
     @b_top = @y
     @b_low = @y + @height
-    @attacking = false
-    @@enemies_appeared += 1
-    @direction = :left
-    @velocity = 1
-    @hit_timer = 0
-    @current_health = @mode == :normal ? 10.00 : 20.00
-    @max_health =  @mode == :normal ? 10.00 : 20.00
   end
 
   def animation
