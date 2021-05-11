@@ -1,30 +1,11 @@
 # Player sprite class
-class Player
+class Player < Char
 
-  ACCELERATION = 1
-  FRICTION = 0.5
   IMAGE_LOC = File.join(SPRITES, 'pc', 'warrior_fem')
   MAX_SPEED = 5
 
-  attr_reader :x, :y, :angle, :radius, :height, :width, :b_left, :b_right, :b_top, :b_low, :attacking, :hit_timer
-  attr_accessor :colliding, :direction, :intro, :middle, :moving, :velocity, :current_health
-
   def initialize(window, x, y)
-    @x = x
-    @y = y
-    @angle = 0.0
-    @direction = :left
-    @moving = false
-    @velocity = 3
-    @velocity_x = 0
-    @velocity_y = 0
-    @radius = 8
-    @middle = []
-    @colliding = false
-    @window = window
-    @image_index = 0
-    @finished = false
-    @counter = 0
+    super
     @font = Gosu::Font.new(28)
     @images = load_images
     @frames = @images[:idle][0..5]
@@ -36,11 +17,6 @@ class Player
     @b_right = @x + @width * 3 / 4
     @b_top = @y + 2
     @b_low = @y + @height
-    @attacking = false
-    @current_health = 100.00
-    @max_health = 100.00
-    @intro = false
-    @hit_timer = 0
   end
 
   def attack(direction)
@@ -61,11 +37,6 @@ class Player
     return damage
   end
 
-  def accelerate
-    @velocity_x += Gosu.offset_x(@angle, ACCELERATION)
-    @velocity_y += Gosu.offset_y(@angle, ACCELERATION)
-  end
-  
   def load_images
     {
       running: Gosu::Image.load_tiles(File.join(IMAGE_LOC, "run", "warrior_run_x2.png"), 128, 88),
