@@ -1,16 +1,26 @@
-Roguely.
-by Kody Wilson
+-==  Roguely  ==-
+By Kody Wilson
 
 This game was made with Gosu and Ruby
-as part of a tutorial on game development
-and programming.
+while creating a tutorial on game
+development and programming.
 
 I hope you enjoyed playing!
 
 ** Credits **
 
-Warrior.
+- Warrior -
+By Clembod
+https://clembod.itch.io/warrior-free-animation-set
 
-Skeleton.
+- Skeleton -
+By Jesse M / Twitter - @Jsf23Art
+https://jesse-m.itch.io/skeleton-pack
 
-Music.
+- Music -
+By Juhani Junkala
+https://opengameart.org/content/gt-rpg-soundtrack
+
+- Tech -
+Ruby: https://www.ruby-lang.org/en/
+Gosu: https://www.libgosu.org/
